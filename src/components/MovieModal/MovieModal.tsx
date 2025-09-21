@@ -1,18 +1,20 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import type { MouseEvent } from "react";
 import type { Movie } from "../../types/movie";
 import css from "./MovieModal.module.css";
 
-type Props = {
+export interface MovieModalProps {
   movie: Movie;
   onClose: () => void;
-};
+}
 
-export default function MovieModal({ movie, onClose }: Props) {
+export default function MovieModal({ movie, onClose }: MovieModalProps) {
   const modalRoot = document.getElementById("modal-root");
 
   useEffect(() => {
-    document.body.classList.add("modal-open");
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -21,7 +23,8 @@ export default function MovieModal({ movie, onClose }: Props) {
 
     return () => {
       window.removeEventListener("keydown", onKeyDown);
-      document.body.classList.remove("modal-open");
+
+      document.body.style.overflow = prevOverflow;
     };
   }, [onClose]);
 
@@ -32,7 +35,7 @@ export default function MovieModal({ movie, onClose }: Props) {
     ? `https://image.tmdb.org/t/p/original${imgPath}`
     : null;
 
-  const onBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) onClose();
   };
 
